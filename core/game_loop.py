@@ -15,7 +15,6 @@ class Game:
         self.current_zone = 2
         self.current_time = "present"
         self.inventory = Inventory("assets/image/ui/inventory.png")
-        
         # game flags
         self.flags = {
             "has_seen_intro": False,
@@ -27,7 +26,12 @@ class Game:
             "tree_grow" : False,
             "found_safe" : False,
             "knows_about_entropy": False,
-            "is_safe_opened": False
+            "is_safe_opened": False,
+            "is_glass_open": False,
+            "is_rubble_swept": False,
+            "is_glass_open": False,
+            "is_battery_charging": False,
+            "has_charged_battery": False
         }
 
         # Scene
@@ -43,8 +47,8 @@ class Game:
         # Create UI
         self.time_slider = TimeSlider(500, 20, 240, 40)
         
-        self.font = pygame.font.SysFont(None, 48)
-        self.font_large = pygame.font.SysFont(None, 100)
+        self.font = pygame.font.Font("assets/fonts/VT323-Regular.ttf", 48)
+        self.font_large = pygame.font.Font("assets/fonts/VT323-Regular.ttf", 100)
 
         # main com UI
         self.main_com_ui = MainComUI()
@@ -81,19 +85,18 @@ class Game:
                     mouse_pos = event.pos
                     
                     # Debug
-                    print(self.flags)
-                    try:
-                        print(self.inventory.get_selected_item().name)
-                    except:
-                        print(None)
+                    # print(self.flags)
+                    # try:
+                    #     print(self.inventory.get_selected_item().name)
+                    # except:
+                    #     print(None)
+                    # print(mouse_pos)
 
                     # Check for dialogue first
                     if self.dialogue_ui.is_active:
                         self.dialogue_ui.handle_click(mouse_pos)
                         continue
 
-                    # for debug
-                    print(mouse_pos)
                     # Main com UI
                     if self.active_ui:
                         action = self.active_ui.handle_click(mouse_pos, self.current_time)
@@ -185,7 +188,7 @@ class Game:
             overlay.fill((0, 0, 0))
             self.screen.blit(overlay, (0, 0))
             
-            self.active_ui.draw(self.screen, self.flags["is_safe_opened"])
+            self.active_ui.draw(self.screen, self)
 
         self.dialogue_ui.draw(self.screen)
 

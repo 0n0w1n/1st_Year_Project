@@ -10,7 +10,7 @@ class TimeSlider:
         
         self.knob_rect = pygame.Rect(x, y, self.segment_width, height)
         
-        self.font = pygame.font.SysFont(None, 20)
+        self.font = pygame.font.Font("assets/fonts/JetBrainsMono-Medium.ttf", 16)
 
     def draw(self, screen, current_time, game):
         selected_item = game.inventory.get_selected_item()
@@ -152,7 +152,7 @@ class MainComUI:
         self.btn_zone5 = pygame.Rect(self.rect.x + 420, self.rect.y + 415, 180, 60) # zone 5
         
         self.alert_message = ""
-        self.font = pygame.font.SysFont(None, 30) # Main font
+        self.font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 12) # Main font
 
         # Debug
         self.show_debug_hitbox = False
@@ -182,7 +182,7 @@ class MainComUI:
             
         return None
 
-    def draw(self, screen, safe_open):
+    def draw(self, screen, game):
         # Main UI
         screen.blit(self.image, self.rect)
 
@@ -197,27 +197,48 @@ class MainComUI:
             "> 2. LEVEL-5 KEYCARD",
             "> 3. OVERRIDE PASSWORD"
         ]
+
+        # Check for showing charge %
+        animation_step = (pygame.time.get_ticks() // 1000) % 2
+
+
+        if game.flags["is_battery_charging"]:
+            if game.current_time == "past":
+                # $ and show estimate time
+                texts[5] = "> 1. Estimated time: 80 years" + " Charging " + "0%" * animation_step
+            elif game.current_time == "present":
+                texts[5] = "> 1. Estimated time: 40 years" + " Charging " + "50%" * animation_step
+
         start_y = self.rect.y + 150
         for i, text in enumerate(texts):
             if 5 <= i <= 7:
-                if i == 5 and False:
-                    text_surf = self.font.render(text, True, COLORS["GREEN"])
+                if i == 5:
+                    # Battery Full charge
+                    if game.flags["has_charged_battery"]:
+                        text_surf = self.font.render(text, True, COLORS["GREEN"])
+                    # Battery Charging
+                    elif game.flags["is_battery_charging"]:
+                        text_surf = self.font.render(text, True, COLORS["YELLOW"])
+                    else:
+                        text_surf = self.font.render(text, True, COLORS["RED"])
 
-                elif i == 6 and safe_open:
+                elif i == 6 and game.flags["is_safe_opened"]:
                     text_surf = self.font.render(text, True, COLORS["GREEN"])
 
                 elif i == 7 and False:
                     text_surf = self.font.render(text, True, COLORS["GREEN"])
-                    
+                
+                # if no progress text is red
                 else:
                     text_surf = self.font.render(text, True, COLORS["RED"])
 
+            # If not requirement just write in normal color
             else:
                 text_surf = self.font.render(text, True, COLORS["VERY_LIGHT_BLUE"])
             screen.blit(text_surf, (self.rect.x + 150, start_y + (i * 30)))
         
         # Button Text
-        btn_font = pygame.font.SysFont(None, 23)
+        btn_font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 12)
 
         text_f2 = btn_font.render("ELEVATOR: FL.2", True, COLORS["VERY_LIGHT_BLUE"])
         rect_f2 = text_f2.get_rect(center=self.btn_floor2.center)
@@ -249,7 +270,7 @@ class DialogueUI:
         # Center
         self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT - 20))
         
-        self.font = pygame.font.SysFont("tahoma", 20)
+        self.font = pygame.font.Font("assets/fonts/JetBrainsMono-Medium.ttf", 18)
 
         # list of sentences
         self.messages = []

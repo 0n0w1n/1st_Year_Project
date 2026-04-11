@@ -15,11 +15,16 @@ item_images = {
                "pot_spot_zone1_present":"assets/image/object/item/pot_spot.png",
                "tree1_present_present": "assets/image/object/zone1/tree1.png",
 
+               "main_com_zone1_future":"assets/image/object/zone1/future/main_com.png",
                "left_door_zone1_future":"assets/image/object/zone1/past/left_door.png",
                "right_door_zone1_future":"assets/image/object/zone1/past/right_door.png",
                "pot_spot_zone1_future":"assets/image/object/item/pot_spot.png",
                "tree1_future_future": "assets/image/object/zone1/tree1.png",
                "tree2_future_future": "assets/image/object/zone1/tree2.png",
+               "key_zone1_future": "assets/image/object/item/key.png",
+               "rubble_zone1_future": "assets/image/object/zone1/future/rubble.png",
+               "charged_battery_zone1_future": "assets/image/object/item/charged_battery.png",
+               
 
                # Zone 2
                "broom_zone2_past":"assets/image/object/item/broom.png",
@@ -51,7 +56,7 @@ item_images = {
                "safe_zone4_future":"assets/image/object/zone4/safe.png",
 
                # Zone 6
-               "energy_zone6_past":"assets/image/object/item/energy.png",
-               "energy_zone6_present":"assets/image/object/item/energy.png",
-               "energy_zone6_future":"assets/image/object/item/energy.png",
+               "battery_zone6_past":"assets/image/object/item/battery.png",
+
+               "charged_battery_zone6_future":"assets/image/object/item/full_battery.png",
                }

@@ -28,11 +28,38 @@ class Item:
     
             # Click on main computer in zone1
             if self.name == "main_com_zone1":
-                if not game.flags["knows_main_objective"]:
+                if not game.flags["knows_main_objective"] and game.current_time != "future":
                     game.dialogue_ui.show(dialogues["main_objective_reveal"])
                     game.flags["knows_main_objective"] = True
-                return "open_main_com"
             
+            # Charge Battery
+                # If not charge
+                elif not game.flags["is_battery_charging"]:
+                    if selected_item and selected_item.name == "battery_zone6" and game.current_time != "future":
+                        if game.current_time == "past":
+                            game.dialogue_ui.show(dialogues["put_battery_charger"])
+                            game.inventory.remove_selected_item()
+                            game.flags["is_battery_charging"] = True
+                            return "battery_inserted"
+                        elif game.current_time == "present":
+                            game.dialogue_ui.show(["Charge function is working.", "But the port is broken."])
+                            return "inspected"
+                        
+                # full in future time
+                else:
+                    if game.current_time == "future":
+                        game.dialogue_ui.show(dialogues["get_full_battery"])
+                        game.inventory.add_item(Item("charged_battery_zone1", 0, 0, 50, 50, True, "future"))
+                        game.flags["is_battery_charging"] = False
+                        game.flags["has_charged_battery"] = True
+                        return "got_charged_battery"
+
+                if game.current_time != "future":
+                    return "open_main_com"
+                else:
+                    return "inspected"
+
+
             # Door to zone3
             elif self.name == "left_door_zone1":
                 return "go_zone3"
@@ -169,3 +196,39 @@ class Item:
                     game.inventory.remove_selected_item()
                     game.inventory.add_item(Item("liquid_entropy_zone3", 0, 0, 100, 100, False, "present"))
                 
+        # Reactor Part
+            elif self.name == "battery_zone6":
+                # If glass is already open
+                if not game.flags["is_glass_open"]:
+                    # Use key
+                    if selected_item and selected_item.name == "key_zone1":
+                        game.dialogue_ui.show(dialogues["use_key"])
+                        game.inventory.remove_selected_item()
+                        game.flags["is_glass_open"] = True
+                        self.is_collectable = True
+                        return "glass_opened"
+                    else:
+                        game.dialogue_ui.show(dialogues["machine_need_key"])
+                else:
+                    game.dialogue_ui.show(dialogues["get_dead_battery"])
+
+            # Key
+            elif self.name == "rubble_zone1":
+                # If its not cleared
+                if not game.flags["is_rubble_swept"]:
+                    # If use broom
+                    if selected_item and selected_item.name == "broom_zone2":
+                        game.dialogue_ui.show(dialogues["sweep_rubble"])
+                        game.flags["is_rubble_swept"] = True
+                        game.scenes[1].items.remove(self)
+
+                        # SUMMON key
+                        game.scenes[1].items.append(Item("key_zone1", 443, 262, 50, 50, True, "future"))
+                        self.is_collectable = True
+                        return "rubble_swept"
+                    
+                    # If does not use broom
+                    else:
+                        game.dialogue_ui.show(dialogues["rubble_heavy"])
+                        return "inspected"
+                    

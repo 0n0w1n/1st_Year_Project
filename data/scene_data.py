@@ -2,12 +2,12 @@ from core.item import Item
 from settings import WIDTH, HEIGHT
 
 zone1 = [
-    Item("main_com_zone1", 0, 0, 800, 600, False, "past"),
+    Item("main_com_zone1", 0, 0, WIDTH, HEIGHT, False, "past"),
     Item("left_door_zone1", 0, 475, 68, 125, False, "past"),
     Item("right_door_zone1", 742, 389, 58, 158, False, "past"),
     Item("pot_spot_zone1", 20, 150, 80, 80, False, "past"),
 
-    Item("main_com_zone1", 0, 0, 800, 600, False, "present"),
+    Item("main_com_zone1", 0, 0, WIDTH, HEIGHT, False, "present"),
     Item("left_door_zone1", 0, 475, 68, 125, False, "present"),
     Item("right_door_zone1", 742, 389, 58, 158, False, "present"),
     Item("Time_Tuner", 400, 210, 120, 120, True, "present"),
@@ -16,11 +16,13 @@ zone1 = [
     Item("pot_spot_zone1", 20, 150, 80, 80, False, "present"),
     Item("tree1_present", -160, 0, WIDTH, HEIGHT, False, "present", False),
 
+    Item("main_com_zone1", 0, 0, WIDTH, HEIGHT, False, "future"),
     Item("left_door_zone1", 0, 475, 68, 125, False, "future"),
     Item("right_door_zone1", 742, 389, 58, 158, False, "future"),
     Item("pot_spot_zone1", 20, 150, 80, 80, False, "future"),
     Item("tree1_future", -160, 0, WIDTH, HEIGHT, False, "future", False),
     Item("tree2_future", -160, 0, WIDTH, HEIGHT, False, "future", False),
+    Item("rubble_zone1", 0, 0, WIDTH, HEIGHT, False, "future"),
 ]
 
 zone2 = [
@@ -54,7 +56,5 @@ zone4 = [
 zone5 = []
 
 zone6 = [
-    Item("energy_zone6", 385, 235, 50, 50, False, "past"),
-    Item("energy_zone6", 385, 235, 50, 50, False, "present"),
-    Item("energy_zone6", 385, 235, 50, 50, False, "future"),
+    Item("battery_zone6", 385, 235, 50, 50, False, "past"),
 ]
