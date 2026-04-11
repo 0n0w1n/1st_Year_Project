@@ -10,9 +10,9 @@ zone1 = [
     Item("main_com_zone1", 0, 0, WIDTH, HEIGHT, False, "present"),
     Item("left_door_zone1", 0, 475, 68, 125, False, "present"),
     Item("right_door_zone1", 742, 389, 58, 158, False, "present"),
-    Item("Time_Tuner", 400, 210, 120, 120, True, "present"),
+    Item("Time_Tuner", 400, 210, 50, 50, True, "present"),
     Item("magnet_zone1", 90, 300, 35, 35, True, "present"),
-    Item("plant_kill_zone1", 682, 203, 50, 50, True, "present"),
+    Item("medicine_zone1", 682, 203, 50, 50, True, "present"),
     Item("pot_spot_zone1", 20, 150, 80, 80, False, "present"),
     Item("tree1_present", -160, 0, WIDTH, HEIGHT, False, "present", False),
 
@@ -23,13 +23,14 @@ zone1 = [
     Item("tree1_future", -160, 0, WIDTH, HEIGHT, False, "future", False),
     Item("tree2_future", -160, 0, WIDTH, HEIGHT, False, "future", False),
     Item("rubble_zone1", 0, 0, WIDTH, HEIGHT, False, "future"),
+    Item("key_on_ground_zone1", 443, 290, 50, 50, False, "future", False),
 ]
 
 zone2 = [
     Item("left_door_zone2", 0, 475, 68, 125, False, "past"),
     Item("broom_zone2", 123, 558, 68, 125, True, "past"),
     Item("left_door_zone2", 0, 475, 68, 125, False, "present"),
-    Item("wire_zone2", 735, 140, 50, 50, True, "present"),
+    Item("fiber_wire_zone2", 735, 140, 50, 50, True, "present"),
     Item("left_door_zone2", 0, 475, 68, 125, False, "future"),
 ]
 
@@ -48,13 +49,39 @@ zone3 = [
 zone4 = [
     Item("paper_zone4", 448, 105, 50, 50, False, "past"),
     Item("safe_zone4", 0, 0, WIDTH, HEIGHT, False, "past"),
-    Item("safe_zone4", 0, 0, WIDTH, HEIGHT, False, "present"),
-    Item("safe_zone4", 0, 0, WIDTH, HEIGHT, False, "future"),
+    Item("elevator_zone4", 0, 0, WIDTH, HEIGHT, False, "past"),
 
+    Item("safe_zone4", 0, 0, WIDTH, HEIGHT, False, "present"),
+    Item("elevator_zone4", 0, 0, WIDTH, HEIGHT, False, "present"),
+
+    Item("safe_zone4", 0, 0, WIDTH, HEIGHT, False, "future"),
+    Item("elevator_zone4", 0, 0, WIDTH, HEIGHT, False, "future"),
+    Item("tree2nd_future", 0, 0, WIDTH, HEIGHT, False, "future", False),
 ]
 
-zone5 = []
+zone5 = [
+    Item("blackbox_zone5", 400, 100, 100, 100, False, "past"),
+    Item("elevator_zone5", 0, 0, WIDTH, HEIGHT, False, "past"),
+    Item("door_zone5", 0, 0, WIDTH, HEIGHT, False, "past"),
+
+    Item("blackbox_zone5", 400, 100, 100, 100, False, "present"),
+    Item("elevator_zone5", 0, 0, WIDTH, HEIGHT, False, "present"),
+    Item("door_zone5", 0, 0, WIDTH, HEIGHT, False, "present"),
+
+
+    Item("blackbox_zone5", 400, 100, 100, 100, False, "future"),
+    Item("elevator_zone5", 0, 0, WIDTH, HEIGHT, False, "future"),
+    Item("door_zone5", 0, 0, WIDTH, HEIGHT, False, "future"),
+]
 
 zone6 = [
-    Item("battery_zone6", 385, 235, 50, 50, False, "past"),
+    Item("battery_zone6", 385, 260, 50, 50, False, "past"),
+    Item("box_zone6", 0, 0, WIDTH, HEIGHT, False, "past"),
+    Item("door_zone6", 0, 0, WIDTH, HEIGHT, False, "past"),
+
+    Item("box_zone6", 0, 0, WIDTH, HEIGHT, False, "present"),
+    Item("door_zone6", 0, 0, WIDTH, HEIGHT, False, "present"),
+
+    Item("box_zone6", 0, 0, WIDTH, HEIGHT, False, "future"),
+    Item("door_zone6", 0, 0, WIDTH, HEIGHT, False, "future"),
 ]

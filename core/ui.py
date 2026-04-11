@@ -150,6 +150,7 @@ class MainComUI:
         self.btn_close = pygame.Rect(self.rect.x + 640, self.rect.y + 110, 50, 50)  # Close
         self.btn_floor2 = pygame.Rect(self.rect.x + 200, self.rect.y + 415, 180, 60) # 2nd floor
         self.btn_zone5 = pygame.Rect(self.rect.x + 420, self.rect.y + 415, 180, 60) # zone 5
+        self.btn_exit = pygame.Rect(self.rect.x + 200, self.rect.y + 200, 400, 55) # Exit
         
         self.alert_message = ""
         self.font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 12) # Main font
@@ -157,17 +158,33 @@ class MainComUI:
         # Debug
         self.show_debug_hitbox = False
 
-    def handle_click(self, mouse_pos, state):
+    def handle_click(self, mouse_pos, state, game):
         # Check wheter mouse hit hitbox or not
         if self.btn_close.collidepoint(mouse_pos):
             self.alert_message = ""
             return "close_ui"
-            
+
+        # Exit button — only active when all 3 requirements met
+        all_ready = (
+            game.flags["has_charged_battery"] and
+            game.flags["is_safe_opened"] and
+            game.flags["has_password"]
+        )
+        if all_ready and self.btn_exit.collidepoint(mouse_pos):
+            self.alert_message = ""
+            return "game_exit"
+
         elif self.btn_floor2.collidepoint(mouse_pos):
             if state == "present":
                 self.alert_message = "Elevator not found/Broken"
             else:
-                self.alert_message = "Access Denied"
+                # if already have key card
+                if game.flags["is_safe_opened"]:
+                    game.current_zone = 4
+                    game.fade("Director's Office")
+                    return "close_ui"
+                else:
+                    self.alert_message = "Access Denied"
             return "ui_clicked"
             
         elif self.btn_zone5.collidepoint(mouse_pos):
@@ -186,6 +203,15 @@ class MainComUI:
         # Main UI
         screen.blit(self.image, self.rect)
 
+        # all requirement
+        all_ready = (
+            game.flags["has_charged_battery"] and
+            game.flags["is_safe_opened"] and
+            game.flags["has_password"]
+        )
+
+
+
         # Text in MainCom
         texts = [
             "TRION MAINFRAME - SYSTEM LOCKDOWN",
@@ -201,17 +227,39 @@ class MainComUI:
         # Check for showing charge %
         animation_step = (pygame.time.get_ticks() // 1000) % 2
 
+        # Drive encryption
+        if game.flags["drive_inserted"] and not game.flags["has_password"]:
+            dots = "..." if animation_step else "   "
+            if game.current_time == "past":
+                texts[3] = "DECRYPTING" + dots + " EST: 40 YRS"
+            elif game.current_time == "present":
+                texts[3] = "DECRYPTING" + dots + " EST: 20 YRS"
+        elif game.flags["has_password"]:
+            texts[3] = "DECRYPTION COMPLETE"
 
         if game.flags["is_battery_charging"]:
             if game.current_time == "past":
-                # $ and show estimate time
+                # and show estimate time
                 texts[5] = "> 1. Estimated time: 80 years" + " Charging " + "0%" * animation_step
             elif game.current_time == "present":
                 texts[5] = "> 1. Estimated time: 40 years" + " Charging " + "50%" * animation_step
+        
+        # space for exit button
+        if all_ready:
+            texts[2] = ""
+            texts[3] = ""
 
         start_y = self.rect.y + 150
         for i, text in enumerate(texts):
-            if 5 <= i <= 7:
+            if i == 3:
+                if game.flags["has_password"]:
+                    text_surf = self.font.render(text, True, COLORS["GREEN"])
+                elif game.flags["drive_inserted"]:
+                    text_surf = self.font.render(text, True, COLORS["YELLOW"])
+                else:
+                    text_surf = self.font.render(text, True, COLORS["VERY_LIGHT_BLUE"])
+
+            elif 5 <= i <= 7:
                 if i == 5:
                     # Battery Full charge
                     if game.flags["has_charged_battery"]:
@@ -225,7 +273,7 @@ class MainComUI:
                 elif i == 6 and game.flags["is_safe_opened"]:
                     text_surf = self.font.render(text, True, COLORS["GREEN"])
 
-                elif i == 7 and False:
+                elif i == 7 and game.flags["has_password"]:
                     text_surf = self.font.render(text, True, COLORS["GREEN"])
                 
                 # if no progress text is red
@@ -238,7 +286,7 @@ class MainComUI:
             screen.blit(text_surf, (self.rect.x + 150, start_y + (i * 30)))
         
         # Button Text
-        btn_font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 12)
+        btn_font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 9)
 
         text_f2 = btn_font.render("ELEVATOR: FL.2", True, COLORS["VERY_LIGHT_BLUE"])
         rect_f2 = text_f2.get_rect(center=self.btn_floor2.center)
@@ -247,6 +295,14 @@ class MainComUI:
         text_z5 = btn_font.render("ELEVATOR: ZONE 5", True, COLORS["VERY_LIGHT_BLUE"])
         rect_z5 = text_z5.get_rect(center=self.btn_zone5.center)
         screen.blit(text_z5, rect_z5)
+
+        # Exit button — only draw when all 3 requirements are met
+        if all_ready:
+            pygame.draw.rect(screen, COLORS["GREEN"], self.btn_exit, border_radius=6)
+            pygame.draw.rect(screen, COLORS["WHITE"], self.btn_exit, 2, border_radius=6)
+            exit_text = btn_font.render(">>> UNLOCK MAIN EXIT <<<", True, COLORS["BLACK"])
+            exit_rect = exit_text.get_rect(center=self.btn_exit.center)
+            screen.blit(exit_text, exit_rect)
 
         # Debug
         if self.show_debug_hitbox:

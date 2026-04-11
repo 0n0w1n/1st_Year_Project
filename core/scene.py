@@ -45,6 +45,16 @@ class Scene:
                     game.flags["tree_grow"] = True
                     game.dialogue_ui.show(dialogues["discover_giant_vine"])
 
+                # Check for open glass
+                elif item.name == "box_zone6" and game.flags["is_glass_open"]:
+                    item.is_active = False
+
+                # first time enter reactor room in past
+                elif item.name == "battery_zone6" and not game.flags["first_time_found_battery"]:
+                    game.dialogue_ui.show(["Look like there's only battery in past."])
+                    game.flags["first_time_found_battery"] = True
+                    item.draw(screen)
+
                 else:
                     item.draw(screen)
 
@@ -68,6 +78,10 @@ class Scene:
                             # For tube to show dialogue
                             if item.name == "test_tube_zone3":
                                 game.dialogue_ui.show(dialogues["pickup_glass_tube"])
+
+                            # Fiber wire pickup
+                            if item.name == "fiber_wire_zone2":
+                                game.dialogue_ui.show(dialogues["pickup_fiber_wire"])
 
                             item.is_active = False
                             print(f"Collected: {item.name}")

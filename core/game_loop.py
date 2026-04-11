@@ -29,9 +29,18 @@ class Game:
             "is_safe_opened": False,
             "is_glass_open": False,
             "is_rubble_swept": False,
-            "is_glass_open": False,
+            "is_key_on_ground": False,
+            "first_time_found_battery": False,
             "is_battery_charging": False,
-            "has_charged_battery": False
+            "has_charged_battery": False,
+            "has_taken_medicine": False,
+            "is_injured": False,
+            "drive_inserted": False,
+            "wire_connected": False,
+            "blackbox_unlocked": False,
+            "has_seen_identity": False,
+            "has_password": False,
+            "trigger_ending": False,
         }
 
         # Scene
@@ -74,9 +83,9 @@ class Game:
                 self.is_running = False
 
             # for debug
-            elif event.type == pygame.KEYDOWN:
-                if 49 <= event.key <= 54:
-                    self.current_zone = event.key-48
+            # elif event.type == pygame.KEYDOWN:
+            #     if 49 <= event.key <= 54:
+            #         self.current_zone = event.key-48
 
             # Click checker
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -91,6 +100,7 @@ class Game:
                     # except:
                     #     print(None)
                     # print(mouse_pos)
+                    
 
                     # Check for dialogue first
                     if self.dialogue_ui.is_active:
@@ -99,7 +109,7 @@ class Game:
 
                     # Main com UI
                     if self.active_ui:
-                        action = self.active_ui.handle_click(mouse_pos, self.current_time)
+                        action = self.active_ui.handle_click(mouse_pos, self.current_time, self)
                         
                         if action == "close_ui":
                             self.active_ui = None
@@ -107,6 +117,10 @@ class Game:
                             self.active_ui = None
                             self.current_zone = 5
                             self.fade(ZONE_NAME[f"zone{self.current_zone}"])
+                        elif action == "game_exit":
+                            self.active_ui = None
+                            self.dialogue_ui.show(dialogues["exit_enter_password"])
+                            self.flags["trigger_ending"] = True
 
                         # For using in main com UI only
                         continue
@@ -116,6 +130,8 @@ class Game:
                     if new_time is not None and not self.active_ui:
                         self.current_time = new_time
                         self.flash_alpha = 255
+                        # first priority to be time tuner in case that there is item in this area
+                        continue
 
                     if self.inventory.handle_click(mouse_pos):
                         continue 
@@ -237,3 +253,14 @@ class Game:
             self.handle_events()
             self.draw()
             self.clock.tick(FPS)
+
+            # Ending sequence: after exit_enter_password dialogue closes, show ending then quit
+            if self.flags["trigger_ending"] and not self.dialogue_ui.is_active:
+                self.dialogue_ui.show(dialogues["game_ending"])
+                self.flags["trigger_ending"] = False
+                # Wait for the ending dialogue to finish, then quit
+                while self.dialogue_ui.is_active and self.is_running:
+                    self.handle_events()
+                    self.draw()
+                    self.clock.tick(FPS)
+                self.is_running = False
