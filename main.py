@@ -1,19 +1,37 @@
-import os
 import pygame
 import sys
-from settings import WIDTH, HEIGHT
+from settings import WIDTH, HEIGHT, FPS
+from core.menu import MenuScene
 from core.game_loop import Game
+
 
 def main():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("The TRION")
-    
+
+    # Zone 0 Main Menu
+    menu = MenuScene(screen)
+    result = menu.run()
+
+    if result == "quit":
+        pygame.quit()
+        sys.exit()
+
+    # Main Game
     game = Game(screen)
     game.run()
 
+    # Freeze pygame while stats window is open
+    pygame.display.iconify()
+
+    from core.stats_window import show_stats
+    game.tracker.finalise()
+    show_stats(game.tracker)
+
     pygame.quit()
     sys.exit()
+
 
 if __name__ == "__main__":
     main()

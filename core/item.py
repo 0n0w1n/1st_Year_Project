@@ -36,6 +36,10 @@ class Item:
                 # Insert drive to start decryption (past) ---
                 elif selected_item and selected_item.name == "drive_zone4" and game.current_time == "past":
                     if not game.flags["drive_inserted"]:
+                        # Battery must be charged and collected first
+                        if not game.flags["has_charged_battery"]:
+                            game.dialogue_ui.show(dialogues["drive_needs_battery"])
+                            return "inspected"
                         game.dialogue_ui.show(dialogues["insert_drive_supercomputer"])
                         game.inventory.remove_selected_item()
                         game.flags["drive_inserted"] = True
@@ -178,8 +182,12 @@ class Item:
                 
                 # Deactivate Tree
                 for item in game.scenes[1].items:
-                    if item.name in ["tree1_present", "tree1_future", "tree2_future", "tree2nd_future"]:
+                    if item.name in ["tree1_present", "tree1_future", "tree2_future"]:
                         item.is_active = False
+                for item in game.scenes[4].items:
+                    if item.name in ["tree2nd_future"]:
+                        item.is_active = False
+
                 return "seed_removed"
 
             # Climb to zone 4 — medicine check
@@ -221,13 +229,13 @@ class Item:
                 if selected_item and selected_item.name == "card_zone4":
                     return "go_zone6"
                 else:
-                    game.dialogue_ui.show(["Need Key Card level-5 to use Elevator"])
+                    game.dialogue_ui.show(["Need Key Card level-5 to use gate"])
                     return "inspected"
             elif self.name == "door_zone6":
                 if selected_item and selected_item.name == "card_zone4":
                     return "go_zone5"
                 else:
-                    game.dialogue_ui.show(["Need Key Card level-5 to use Elevator"])
+                    game.dialogue_ui.show(["Need Key Card level-5 to use gate"])
                     return "inspected"
                     
             
@@ -272,6 +280,7 @@ class Item:
                     game.dialogue_ui.show(dialogues["scoop_liquid_entropy"])
                     game.inventory.remove_selected_item()
                     game.inventory.add_item(Item("liquid_entropy_zone3", 0, 0, 100, 100, False, "present"))
+                    game.flags["liquid_entropy_collected"] = True
                 
         # Reactor Part
             elif self.name == "battery_zone6":

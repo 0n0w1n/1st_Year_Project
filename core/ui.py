@@ -231,9 +231,9 @@ class MainComUI:
         if game.flags["drive_inserted"] and not game.flags["has_password"]:
             dots = "..." if animation_step else "   "
             if game.current_time == "past":
-                texts[3] = "DECRYPTING" + dots + " EST: 40 YRS"
+                texts[3] = "DECRYPTING" + dots + " EST: 80 YRS"
             elif game.current_time == "present":
-                texts[3] = "DECRYPTING" + dots + " EST: 20 YRS"
+                texts[3] = "DECRYPTING" + dots + " EST: 40 YRS"
         elif game.flags["has_password"]:
             texts[3] = "DECRYPTION COMPLETE"
 

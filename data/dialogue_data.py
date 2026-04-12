@@ -22,7 +22,7 @@ dialogues = {
         "The terminal says I need three items\nto unlock the system:",
         "1. Quantum Energy\n2. Level-5 Keycard\n3. Override Password",
         "I need to search this place.",
-        "Maybe I should check Floor 2."
+        "Maybe I should check 2nd floor."
     ],
 
     # try to go to 2nd floor (access denied)
@@ -60,7 +60,7 @@ dialogues = {
     # Tree is growing through 2nd floor
     "discover_giant_vine": [
         "Incredible! After 80 years, that small seed\ngrew into a huge glowing vine.",
-        "It broke through the ceiling to Floor 2.",
+        "It broke through the ceiling to 2nd floor.",
         "It looks strong enough.",
         "I can climb it."
     ],
@@ -208,11 +208,11 @@ dialogues = {
         "I plugged the Data Drive into the supercomputer.",
         "The screen flickers...",
         "[ QUANTUM FILE DETECTED ]",
-        "[ TIME TO DECRYPT: 40 YEARS ]",
+        "[ TIME TO DECRYPT: 80 YEARS ]",
         "I have to come back later."
     ],
 
-    # Present: supercomputer is destroyed, need wire to back up
+    # supercomputer is destroyed in present
     "supercomputer_destroyed": [
         "The supercomputer is broken.",
         "The data I started... is gone.",
@@ -221,13 +221,13 @@ dialogues = {
         "I need a fast cable to send data to the B1 Blackbox."
     ],
 
-    # Pick up fiber optic wire (future)
+    # Pick up fiber optic wire
     "pickup_fiber_wire": [
         "A high-speed fiber cable.",
         "It can send a lot of data very fast.",
     ],
 
-    # Connect wire to supercomputer past — backup initiated
+    # Connect wire to supercomputer
     "connect_wire_supercomputer": [
         "I connected the cable to the port.",
         "[ DATA SENT TO B1 BLACKBOX ]",
@@ -235,7 +235,7 @@ dialogues = {
         "Now I need to go to B1 and check it."
     ],
 
-    # Zone5 blackbox — wire not connected yet
+    # wire not connected to black box yet
     "blackbox_no_data": [
         "The Blackbox terminal. It survived everything.",
         "[ WAITING FOR DATA ]",
@@ -276,14 +276,7 @@ dialogues = {
         "And I ran away."
     ],
 
-    # Exit door — not all items ready
-    "exit_missing_items": [
-        "[ MAIN EXIT LOCKED ]",
-        "Three items needed.",
-        "I'm not ready yet."
-    ],
-
-    # Exit door — all items present, enter password
+    # Exit door
     "exit_enter_password": [
         "Battery inserted... power on.",
         "Keycard accepted... unlocked.",
@@ -292,7 +285,14 @@ dialogues = {
         "It's 1986."
     ],
 
+    # Drive insert blocked when not have battery yet
+    "drive_needs_battery": [
+        "The Supercomputer needs power to run the decryption.",
+        "I need to charge the battery first.",
+        "The main computer needs a Charged Battery \nin the system before I can insert the drive."
+    ],
     # Ending
+
     "game_ending": [
         "[ PASSWORD ACCEPTED ]",
         "[ TIME RESET STARTED ]",

@@ -19,6 +19,7 @@ COLORS = {
 }
 
 ZONE_NAME = {
+    "zone0" : "Main Menu",
     "zone1" : "Central Command",
     "zone2" : "Experiment Facility",
     "zone3" : "Biological Research",

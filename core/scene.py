@@ -4,13 +4,19 @@ from data.dialogue_data import dialogues
 
 class Scene:
     def __init__(self, zone_id, items):
+        self.fading = False
         self.zone_id = zone_id
         self.items = items
 
         # load scene
-        self.bg_past = self.load_image(f"assets/image/background/zone{zone_id}_past.png")
-        self.bg_present = self.load_image(f"assets/image/background/zone{zone_id}_present.png")
-        self.bg_future = self.load_image(f"assets/image/background/zone{zone_id}_future.png")
+        if self.zone_id != 7:
+            self.bg_past = self.load_image(f"assets/image/background/zone{zone_id}_past.png")
+            self.bg_present = self.load_image(f"assets/image/background/zone{zone_id}_present.png")
+            self.bg_future = self.load_image(f"assets/image/background/zone{zone_id}_future.png")
+        else:
+            self.bg_past = self.load_image(f"assets/image/background/zone7.png")
+            self.bg_present = self.load_image(f"assets/image/background/zone7.png")
+            self.bg_future = self.load_image(f"assets/image/background/zone7.png")
         
 
     def load_image(self, path):
@@ -29,12 +35,38 @@ class Scene:
         if current_time == "past":
             screen.blit(self.bg_past, (0, 0))
         elif current_time == "present":
+            # Draw BG
             screen.blit(self.bg_present, (0, 0))
+
+            # Fade black
+            if not game.flags["has_seen_intro"]:
+                self.fading = True
+                
+                # if theres no intro_alpha var
+                if not hasattr(self, 'intro_alpha'):
+                    self.intro_alpha = 255 
+                
+                # Fade down
+                self.intro_alpha -= 3 
+                
+                if self.intro_alpha <= 0:
+                    self.intro_alpha = 0
+                    game.flags["has_seen_intro"] = True
+                    self.fading = False
+                    game.dialogue_ui.show(dialogues["intro_wake_up"])
+                else:
+                    # create black screen
+                    fade_surface = pygame.Surface(screen.get_size())
+                    fade_surface.fill((0, 0, 0))
+                    fade_surface.set_alpha(self.intro_alpha)
+                    screen.blit(fade_surface, (0, 0))
         elif current_time == "future":
             screen.blit(self.bg_future, (0, 0))
 
         for item in self.items:
             if item.time_period == current_time:
+                if self.fading:
+                    continue
                 # Check for spot pot to show when hold pot
                 if item.name == "pot_spot_zone1":
                     if selected_item and selected_item.name == "pot_zone3":
@@ -71,6 +103,9 @@ class Scene:
             if item.rect.collidepoint(mouse_pos) and item.time_period == current_time and item.is_active:
                 pos_in_mask = (mouse_pos[0] - item.rect.x, mouse_pos[1] - item.rect.y)
                 if item.mask.get_at(pos_in_mask):
+
+                    # Track which item was clicked for stats
+                    game.last_clicked_item = item.name
 
                     # Check if it collectable
                     if item.is_collectable:
