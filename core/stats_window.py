@@ -1,3 +1,8 @@
+"""
+provides a Tkinter dashboard to visualize player behavioral 
+click distributions, dimension usage, thinking time, 
+puzzle efficiency, and zone exploration.
+"""
 import tkinter as tk
 from tkinter import ttk
 import matplotlib
@@ -28,6 +33,7 @@ PUZZLE_ORDER = [
 ]
 
 def _style_ax(ax):
+    """Applies theme to a Matplotlib axis."""
     ax.set_facecolor(PLOT_BG)
     ax.tick_params(colors=TEXT, labelsize=8)
     ax.xaxis.label.set_color(TEXT)
@@ -38,6 +44,7 @@ def _style_ax(ax):
     ax.grid(color=GRID, linewidth=0.6)
 
 def _embed(fig, parent):
+    """Embeds a Matplotlib figure into a Tkinter frame"""
     fig.patch.set_facecolor(PLOT_BG)
     canvas = FigureCanvasTkAgg(fig, master=parent)
     canvas.draw()
@@ -45,10 +52,12 @@ def _embed(fig, parent):
     return canvas
 
 def _no_data(ax, msg="No data recorded yet"):
+    """Displays a placeholder message when no data is available for a plot"""
     ax.text(0.5, 0.5, msg, transform=ax.transAxes,
             ha="center", va="center", color=TEXT, fontsize=10)
 
 def _read_csv(feature):
+    """Reads a specific feature CSV and returns a list of dictionaries"""
     path = CSV_FILES.get(feature, "")
     if not os.path.isfile(path):
         return []
@@ -59,6 +68,7 @@ def _rows_for_session(rows, session_id):
     return [r for r in rows if r.get("session_id") == session_id]
 
 def _stint_totals_from_rows(rows):
+    """Calculates click totals per dimension stint from CSV rows"""
     counts = defaultdict(int)
     dim_of = {}
     for r in rows:
@@ -73,6 +83,7 @@ def _stint_totals_from_rows(rows):
     return result
 
 def _stint_totals_from_tuples(dim_rows):
+    """Calculates click totals from in-memory tuple data"""
     counts = defaultdict(int)
     for dim, sid in dim_rows:
         counts[(dim, sid)] += 1
@@ -83,6 +94,7 @@ def _stint_totals_from_tuples(dim_rows):
     return result
 
 def _puzzle_totals_from_rows(rows):
+    """Aggregates click counts per puzzle stage from CSV data"""
     counts = defaultdict(int)
     for r in rows:
         stage = r.get("puzzle_stage", r.get("item_name", ""))
@@ -94,6 +106,7 @@ def _puzzle_totals_from_rows(rows):
     return result
 
 def _make_sub_notebook(parent):
+    """Creates a styled sub-notebook for switching between Session/All data"""
     style_name = "Inner.TNotebook"
     style = ttk.Style()
     style.configure(f"{style_name}",        background=PANEL, borderwidth=0)
@@ -107,6 +120,7 @@ def _make_sub_notebook(parent):
     return nb
 
 def _sub_frames(parent):
+    """Returns two frames (This Session, All Sessions) inside a sub-notebook."""
     nb = _make_sub_notebook(parent)
     f_this = tk.Frame(nb, bg=PANEL)
     f_all  = tk.Frame(nb, bg=PANEL)
@@ -115,6 +129,7 @@ def _sub_frames(parent):
     return f_this, f_all
 
 def _click_coords_graph(parent, coords, title):
+    """Generates a horizontal and vertical histogram of click coordinates."""
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(8, 3.4))
     fig.suptitle(title, color=ACCENT, fontsize=10)
     if coords:
@@ -135,6 +150,7 @@ def _click_coords_graph(parent, coords, title):
     plt.close(fig)
 
 def build_click_coords(parent, tracker):
+    """Builder for the Click Map tab"""
     f_this, f_all = _sub_frames(parent)
 
     # This session
@@ -150,6 +166,7 @@ def build_click_coords(parent, tracker):
                         f"All Sessions  ({len(all_coords)} clicks)")
 
 def _dim_boxplot(parent, stint_data, title):
+    """Generates a boxplot comparing click density across dimensions."""
     fig, ax = plt.subplots(figsize=(7, 3.8))
     dims   = ["past",        "present",        "future"]
     labels = ["Past (1986)", "Present (2026)", "Future (2066)"]
@@ -175,6 +192,7 @@ def _dim_boxplot(parent, stint_data, title):
     _embed(fig, parent); plt.close(fig)
 
 def build_clicks_per_dim(parent, tracker):
+    """Builder for the Dimensions tab"""
     f_this, f_all = _sub_frames(parent)
 
     # This session from in-memory dim rows
@@ -187,6 +205,7 @@ def build_clicks_per_dim(parent, tracker):
     _dim_boxplot(f_all, all_stints, "Clicks Per Dimension — All Sessions")
 
 def _thinking_graph(parent, durations, indices, title):
+    """Generates a line graph showing idle times of a session"""
     fig, ax = plt.subplots(figsize=(8, 3.4))
     if durations:
         ax.plot(indices, durations, color=ACCENT, linewidth=1.5,
@@ -203,6 +222,7 @@ def _thinking_graph(parent, durations, indices, title):
     _embed(fig, parent); plt.close(fig)
 
 def build_thinking_time(parent, tracker):
+    """Builder for the Thinking Time tab"""
     f_this, f_all = _sub_frames(parent)
 
     # This session
@@ -223,11 +243,7 @@ def build_thinking_time(parent, tracker):
     _thinking_graph(f_all, all_dur, all_idx, "Thinking Time — All Sessions")
 
 def _puzzle_table(parent, counts_this, counts_all, current_last):
-    """
-    counts_this: dict puzzle_stage -> int  (this session)
-    counts_all:  dict puzzle_stage -> [int, ...]  (all sessions)
-    current_last: puzzle_stage the player stopped at
-    """
+    """Creates a custom Tkinter table for puzzle difficulty metrics."""
     outer = tk.Frame(parent, bg=PANEL)
     outer.pack(fill=tk.BOTH, expand=True, padx=14, pady=12)
 
@@ -308,6 +324,7 @@ def _puzzle_table(parent, counts_this, counts_all, current_last):
              ).pack(pady=(10, 4))
 
 def build_puzzle_clicks(parent, tracker):
+    """Builder for the Puzzle Clicks tab."""
     f_this, f_all = _sub_frames(parent)
 
     # Current session counts
@@ -331,6 +348,7 @@ def build_puzzle_clicks(parent, tracker):
     _puzzle_table(f_all, current_counts, all_agg, current_last)
 
 def _zone_bar(parent, zones, counts, title):
+    """Generates a color-coded bar chart of zone visit counts"""
     fig, ax = plt.subplots(figsize=(7, 3.8))
     x    = np.arange(len(zones))
     bars = ax.bar(x, counts, color=ACCENT, edgecolor=BG, linewidth=0.5, width=0.55)
@@ -352,6 +370,7 @@ def _zone_bar(parent, zones, counts, title):
     _embed(fig, parent); plt.close(fig)
 
 def build_zone_entries(parent, tracker):
+    """Builder for the Zone Entries tab"""
     f_this, f_all = _sub_frames(parent)
 
     zones = [f"Zone {i}" for i in range(1, 7)]
@@ -372,6 +391,7 @@ def build_zone_entries(parent, tracker):
 
 # Main window
 def show_stats(tracker):
+    """Initializes and displays the main statistics dashboard window"""
     root = tk.Tk()
     root.title("THE TRION — Session Statistics")
     root.configure(bg=BG)

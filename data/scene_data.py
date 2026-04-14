@@ -1,4 +1,4 @@
-# This file defines what should be present in each scene of the game.
+"""This file defines what should be present in each scene of the game"""
 from core.item import Item
 from settings import WIDTH, HEIGHT
 

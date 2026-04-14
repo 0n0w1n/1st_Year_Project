@@ -1,25 +1,30 @@
 import pygame
 from settings import COLORS, HEIGHT, WIDTH
-    
+
 
 class TimeSlider:
+    """UI for time changing when using time tuner"""
     def __init__(self, x, y, width, height):
         # Hit rect UI
         self.rect = pygame.Rect(x, y, width, height)
-        self.segment_width = width // 3 
-        
+        self.segment_width = width // 3
+
         self.knob_rect = pygame.Rect(x, y, self.segment_width, height)
-        
-        self.font = pygame.font.Font("assets/fonts/JetBrainsMono-Medium.ttf", 16)
+
+        self.font = pygame.font.Font(
+            "assets/fonts/JetBrainsMono-Medium.ttf", 16)
 
     def draw(self, screen, current_time, game):
+        """draw time slider to change UI up right"""
         selected_item = game.inventory.get_selected_item()
 
         # Check for selected item to be time tuner
         if selected_item and selected_item.name == "Time_Tuner":
-            pygame.draw.rect(screen, (150, 150, 150), self.rect, border_radius=10)
-            pygame.draw.rect(screen, COLORS["BLACK"], self.rect, 2, border_radius=10)
-            
+            pygame.draw.rect(screen, (150, 150, 150),
+                             self.rect, border_radius=10)
+            pygame.draw.rect(
+                screen, COLORS["BLACK"], self.rect, 2, border_radius=10)
+
             # set current time button to be different
             if current_time == "past":
                 self.knob_rect.x = self.rect.x
@@ -27,16 +32,22 @@ class TimeSlider:
                 self.knob_rect.x = self.rect.x + self.segment_width
             elif current_time == "future":
                 self.knob_rect.x = self.rect.x + (self.segment_width * 2)
-                
-            pygame.draw.rect(screen, COLORS["WHITE"], self.knob_rect, border_radius=10)
-            pygame.draw.rect(screen, COLORS["BLACK"], self.knob_rect, 2, border_radius=10)
-            
+
+            pygame.draw.rect(
+                screen, COLORS["WHITE"], self.knob_rect, border_radius=10)
+            pygame.draw.rect(
+                screen, COLORS["BLACK"], self.knob_rect, 2, border_radius=10)
+
             # show what is current time
-            screen.blit(self.font.render("PAST", True, COLORS["BLACK"]), (self.rect.x + 15, self.rect.y + 45))
-            screen.blit(self.font.render("PRESENT", True, COLORS["BLACK"]), (self.rect.x + self.segment_width + 5, self.rect.y + 45))
-            screen.blit(self.font.render("FUTURE", True, COLORS["BLACK"]), (self.rect.x + (self.segment_width * 2) + 5, self.rect.y + 45))
+            screen.blit(self.font.render(
+                "PAST", True, COLORS["BLACK"]), (self.rect.x + 15, self.rect.y + 45))
+            screen.blit(self.font.render("PRESENT", True, COLORS["BLACK"]), (
+                self.rect.x + self.segment_width + 5, self.rect.y + 45))
+            screen.blit(self.font.render("FUTURE", True, COLORS["BLACK"]), (
+                self.rect.x + (self.segment_width * 2) + 5, self.rect.y + 45))
 
     def handle_click(self, mouse_pos, game):
+        """handle when click at time slider ui"""
         selected_item = game.inventory.get_selected_item()
 
         # check when click whether we hold time tuner or not
@@ -47,14 +58,18 @@ class TimeSlider:
                 return "present"
             return "future"
         return None
-    
+
 
 class Inventory:
+    """
+    UI inventory on bottom of screen
+    contains and show item on screen
+    """
     def __init__(self, ui_image_path):
         # Load inventory slots image
         self.image = pygame.image.load(ui_image_path).convert_alpha()
         self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
-        
+
         # items and max item be 9
         self.items = []
         self.max_items = 9
@@ -71,15 +86,18 @@ class Inventory:
         for i in range(self.max_items):
             slot_x = self.start_x + (i * (self.slot_size + self.slot_margin))
             slot_y = self.start_y
-            self.slot_rects.append(pygame.Rect(slot_x, slot_y, self.slot_size, self.slot_size))
+            self.slot_rects.append(pygame.Rect(
+                slot_x, slot_y, self.slot_size, self.slot_size))
 
     def add_item(self, item):
+        """add item to the inventory"""
         if len(self.items) < self.max_items:
             self.items.append(item)
             return True
         return False
-    
+
     def handle_click(self, mouse_pos):
+        """handle when click on inventory bar"""
         for i, rect in enumerate(self.slot_rects):
             if rect.collidepoint(mouse_pos):
                 # Check whether this slot is empty or not
@@ -91,73 +109,88 @@ class Inventory:
                         self.selected_index = i
                 return True
         return False
-    
+
     def get_selected_item(self):
+        """return current selected item"""
         if self.selected_index is not None and self.selected_index < len(self.items):
             return self.items[self.selected_index]
         return None
-    
+
     def remove_selected_item(self):
+        """remove current selected item from inventory"""
         if self.selected_index is not None and self.selected_index < len(self.items):
             removed_item = self.items.pop(self.selected_index)
             self.selected_index = None
             return removed_item
         return None
-    
+
     def draw(self, screen):
+        """draw inventory and item icon on screen"""
         screen.blit(self.image, (0, 0))
         # loop every item in slots to draw item's icon
         for index, item in enumerate(self.items):
-            slot_x = self.start_x + (index * (self.slot_size + self.slot_margin))
+            slot_x = self.start_x + \
+                (index * (self.slot_size + self.slot_margin))
             slot_y = self.start_y
-            
+
             icon_size = self.slot_size - 10
-            item_icon = pygame.transform.scale(item.image, (icon_size, icon_size))
-            
-            icon_rect = item_icon.get_rect(center=(slot_x + (self.slot_size//2), slot_y + (self.slot_size//2)))
+            item_icon = pygame.transform.scale(
+                item.image, (icon_size, icon_size))
+
+            icon_rect = item_icon.get_rect(
+                center=(slot_x + (self.slot_size//2), slot_y + (self.slot_size//2)))
             screen.blit(item_icon, icon_rect)
 
         # Draw selected slot triangle
         if self.selected_index is not None:
             selected_rect = self.slot_rects[self.selected_index]
-            
+
             tri_size = 8
-            bottom_y = selected_rect.top - 5 
+            bottom_y = selected_rect.top - 5
             center_x = selected_rect.centerx
-            
+
             p1 = (center_x - tri_size, bottom_y - tri_size)
-            p2 = (center_x + tri_size, bottom_y - tri_size) 
+            p2 = (center_x + tri_size, bottom_y - tri_size)
             p3 = (center_x, bottom_y)
-            
+
             pygame.draw.polygon(screen, (255, 215, 0), [p1, p2, p3])
 
 
 class MainComUI:
+    """UI that appear when click on computer in zone1"""
     def __init__(self):
         # UI image path
-        self.image = pygame.image.load("assets/image/ui/main_com_ui.png").convert_alpha()
-        
+        self.image = pygame.image.load(
+            "assets/image/ui/main_com_ui.png").convert_alpha()
+
         # adjust size
         self.ui_width = WIDTH
         self.ui_height = HEIGHT
-        self.image = pygame.transform.scale(self.image, (self.ui_width, self.ui_height))
-        
+        self.image = pygame.transform.scale(
+            self.image, (self.ui_width, self.ui_height))
+
         # Center the UI
         self.rect = self.image.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-        
+
         # Create hitbox of button
-        self.btn_close = pygame.Rect(self.rect.x + 640, self.rect.y + 110, 50, 50)  # Close
-        self.btn_floor2 = pygame.Rect(self.rect.x + 200, self.rect.y + 415, 180, 60) # 2nd floor
-        self.btn_zone5 = pygame.Rect(self.rect.x + 420, self.rect.y + 415, 180, 60) # zone 5
-        self.btn_exit = pygame.Rect(self.rect.x + 200, self.rect.y + 200, 400, 55) # Exit
-        
+        self.btn_close = pygame.Rect(
+            self.rect.x + 640, self.rect.y + 110, 50, 50)  # Close
+        self.btn_floor2 = pygame.Rect(
+            self.rect.x + 200, self.rect.y + 415, 180, 60)  # 2nd floor
+        self.btn_zone5 = pygame.Rect(
+            self.rect.x + 420, self.rect.y + 415, 180, 60)  # zone 5
+        self.btn_exit = pygame.Rect(
+            self.rect.x + 200, self.rect.y + 200, 400, 55)  # Exit
+
         self.alert_message = ""
-        self.font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 12) # Main font
+        self.font = pygame.font.Font(
+            "assets/fonts/PressStart2P-Regular.ttf", 12)  # Main font
 
         # Debug
         self.show_debug_hitbox = False
 
     def _all_ready(self, game):
+        """check whether player pass all condition to pass the game"""
         return (
             game.flags["has_charged_battery"] and
             game.flags["is_safe_opened"] and
@@ -165,6 +198,7 @@ class MainComUI:
         )
 
     def handle_click(self, mouse_pos, state, game):
+        """handle click when open computer"""
         # Check wheter mouse hit hitbox or not
         if self.btn_close.collidepoint(mouse_pos):
             self.alert_message = ""
@@ -186,25 +220,30 @@ class MainComUI:
                     return "close_ui"
                 self.alert_message = "Access Denied"
             return "ui_clicked"
-            
+
         if self.btn_zone5.collidepoint(mouse_pos):
             if state == "present":
                 self.alert_message = "Elevator not found/Broken"
                 return "ui_clicked"
             self.alert_message = ""
             return "go_zone5"
-            
+
         if self.rect.collidepoint(mouse_pos):
             return "ui_clicked"
-            
+
         return None
 
     def draw(self, screen, game):
+        """
+        Draw UI on screen when its open
+        and components in UI
+        including logic when charging or encrypting drive
+        to change text in UI
+        """
         # Main UI
         screen.blit(self.image, self.rect)
 
         all_ready = self._all_ready(game)
-
 
         # Text in MainCom
         texts = [
@@ -234,10 +273,12 @@ class MainComUI:
         if game.flags["is_battery_charging"]:
             if game.current_time == "past":
                 # and show estimate time
-                texts[5] = "> 1. Estimated time: 80 years" + " Charging " + "0%" * animation_step
+                texts[5] = "> 1. Estimated time: 80 years" + \
+                    " Charging " + "0%" * animation_step
             elif game.current_time == "present":
-                texts[5] = "> 1. Estimated time: 40 years" + " Charging " + "50%" * animation_step
-        
+                texts[5] = "> 1. Estimated time: 40 years" + \
+                    " Charging " + "50%" * animation_step
+
         # space for exit button
         if all_ready:
             texts[2] = ""
@@ -251,16 +292,19 @@ class MainComUI:
                 elif game.flags["drive_inserted"]:
                     text_surf = self.font.render(text, True, COLORS["YELLOW"])
                 else:
-                    text_surf = self.font.render(text, True, COLORS["VERY_LIGHT_BLUE"])
+                    text_surf = self.font.render(
+                        text, True, COLORS["VERY_LIGHT_BLUE"])
 
             elif 5 <= i <= 7:
                 if i == 5:
                     # Battery Full charge
                     if game.flags["has_charged_battery"]:
-                        text_surf = self.font.render(text, True, COLORS["GREEN"])
+                        text_surf = self.font.render(
+                            text, True, COLORS["GREEN"])
                     # Battery Charging
                     elif game.flags["is_battery_charging"]:
-                        text_surf = self.font.render(text, True, COLORS["YELLOW"])
+                        text_surf = self.font.render(
+                            text, True, COLORS["YELLOW"])
                     else:
                         text_surf = self.font.render(text, True, COLORS["RED"])
 
@@ -269,32 +313,38 @@ class MainComUI:
 
                 elif i == 7 and game.flags["has_password"]:
                     text_surf = self.font.render(text, True, COLORS["GREEN"])
-                
+
                 # if no progress text is red
                 else:
                     text_surf = self.font.render(text, True, COLORS["RED"])
 
             # If not requirement just write in normal color
             else:
-                text_surf = self.font.render(text, True, COLORS["VERY_LIGHT_BLUE"])
+                text_surf = self.font.render(
+                    text, True, COLORS["VERY_LIGHT_BLUE"])
             screen.blit(text_surf, (self.rect.x + 150, start_y + (i * 30)))
-        
+
         # Button Text
         btn_font = pygame.font.Font("assets/fonts/PressStart2P-Regular.ttf", 9)
 
-        text_f2 = btn_font.render("ELEVATOR: FL.2", True, COLORS["VERY_LIGHT_BLUE"])
+        text_f2 = btn_font.render(
+            "ELEVATOR: FL.2", True, COLORS["VERY_LIGHT_BLUE"])
         rect_f2 = text_f2.get_rect(center=self.btn_floor2.center)
         screen.blit(text_f2, rect_f2)
 
-        text_z5 = btn_font.render("ELEVATOR: ZONE 5", True, COLORS["VERY_LIGHT_BLUE"])
+        text_z5 = btn_font.render(
+            "ELEVATOR: ZONE 5", True, COLORS["VERY_LIGHT_BLUE"])
         rect_z5 = text_z5.get_rect(center=self.btn_zone5.center)
         screen.blit(text_z5, rect_z5)
 
         # Exit button — only draw when all 3 requirements are met
         if all_ready:
-            pygame.draw.rect(screen, COLORS["GREEN"], self.btn_exit, border_radius=6)
-            pygame.draw.rect(screen, COLORS["WHITE"], self.btn_exit, 2, border_radius=6)
-            exit_text = btn_font.render(">>> UNLOCK MAIN EXIT <<<", True, COLORS["BLACK"])
+            pygame.draw.rect(
+                screen, COLORS["GREEN"], self.btn_exit, border_radius=6)
+            pygame.draw.rect(
+                screen, COLORS["WHITE"], self.btn_exit, 2, border_radius=6)
+            exit_text = btn_font.render(
+                ">>> UNLOCK MAIN EXIT <<<", True, COLORS["BLACK"])
             exit_rect = exit_text.get_rect(center=self.btn_exit.center)
             screen.blit(exit_text, exit_rect)
 
@@ -303,24 +353,28 @@ class MainComUI:
             pygame.draw.rect(screen, COLORS["RED"], self.btn_close, 2)
             pygame.draw.rect(screen, COLORS["RED"], self.btn_floor2, 2)
             pygame.draw.rect(screen, COLORS["RED"], self.btn_zone5, 2)
-            
+
         # Alert message
         if self.alert_message:
-            alert_surf = self.font.render(self.alert_message, True, (255, 50, 50))
-            alert_rect = alert_surf.get_rect(center=(self.rect.centerx - 110, self.rect.bottom - 210))
+            alert_surf = self.font.render(
+                self.alert_message, True, (255, 50, 50))
+            alert_rect = alert_surf.get_rect(
+                center=(self.rect.centerx - 110, self.rect.bottom - 210))
             screen.blit(alert_surf, alert_rect)
 
-        
+
 class DialogueUI:
+    """Dialogue UI that appear for story telling"""
     def __init__(self, image_path):
         # Text box
         self.image = pygame.image.load(image_path).convert_alpha()
         self.image = pygame.transform.scale(self.image, (WIDTH, HEIGHT))
-        
+
         # Center
         self.rect = self.image.get_rect(midbottom=(WIDTH // 2, HEIGHT - 20))
-        
-        self.font = pygame.font.Font("assets/fonts/JetBrainsMono-Medium.ttf", 18)
+
+        self.font = pygame.font.Font(
+            "assets/fonts/JetBrainsMono-Medium.ttf", 18)
 
         # list of sentences
         self.messages = []
@@ -329,23 +383,26 @@ class DialogueUI:
         self.is_active = False
 
     def show(self, texts_list):
+        """message that will show"""
         self.messages = texts_list
         self.current_index = 0
         self.is_active = True
 
     def handle_click(self, _mouse_pos):
+        """handle when player click whlie dialogue is on"""
         # Click for next sentence
         if self.is_active:
             self.current_index += 1
-            
+
             # Close when read all sentence
             if self.current_index >= len(self.messages):
                 self.is_active = False
             return True
-            
+
         return False
 
     def draw(self, screen):
+        """draw dialogue and text on screen"""
         if not self.is_active:
             return
 
@@ -358,23 +415,23 @@ class DialogueUI:
 
         line_height = self.font.get_linesize() + 5
         box_center_y = 410
-        
+
         for i, line in enumerate(lines):
             text_surf = self.font.render(line, True, COLORS["WHITE"])
-            
+
             # Text's rect
             text_rect = text_surf.get_rect()
-            
+
             # Center_X
             text_rect.centerx = self.rect.centerx
-            
+
             # Center_Y
             offset_y = (i - (len(lines) - 1) / 2) * line_height
             text_rect.centery = box_center_y + offset_y
-            
+
             # Draw
             screen.blit(text_surf, text_rect)
-            
+
         # Triangle
         if pygame.time.get_ticks() % 1000 < 500:
             pygame.draw.polygon(screen, COLORS["BLACK"], [

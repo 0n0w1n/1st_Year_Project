@@ -1,9 +1,15 @@
+"""
+Menu scene contain start and quit button for starting the game
+"""
 import pygame
 import sys
 from settings import WIDTH, HEIGHT, COLORS, FPS
 
 
 class MenuScene:
+    """
+    component of menu screen
+    """
     def __init__(self, screen):
         self.screen = screen
         self.clock = pygame.time.Clock()
@@ -43,6 +49,9 @@ class MenuScene:
         return None
 
     def handle_events(self):
+        """
+        handle when click and button
+        """
         mouse_pos = pygame.mouse.get_pos()
         self.hovered_index = self._get_hovered(mouse_pos)
 
@@ -75,6 +84,9 @@ class MenuScene:
                     self.is_running = False
 
     def update(self):
+        """
+        fade screen after start
+        """
         if self.fading_out:
             self.fade_alpha = min(255, self.fade_alpha + self.FADE_SPEED)
             if self.fade_alpha >= 255:
@@ -83,6 +95,9 @@ class MenuScene:
                 self.is_running = False
 
     def draw(self):
+        """
+        draw on screen
+        """
         self.screen.blit(self.background, (0, 0))
 
         # Triangle indicator
@@ -109,6 +124,9 @@ class MenuScene:
             self.screen.blit(self.white, (0, 0))
 
     def run(self):
+        """
+        loop running until game start
+        """
         while self.is_running:
             self.handle_events()
             self.update()

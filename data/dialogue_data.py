@@ -1,3 +1,4 @@
+"""Dialogue text that will appear in Dialogue box in game"""
 dialogues = {
     # start
     "intro_wake_up": [
@@ -31,7 +32,7 @@ dialogues = {
         "The panel is working,\nbut I don't have access.",
         "I need to find a high-level keycard."
     ],
-    
+
     # no trion tuner
     "no_tuner_yet": [
         "I feel stuck in this time.\nI need a device to get out of here."
@@ -48,7 +49,7 @@ dialogues = {
         "The label says 'Experimental Specimen'.",
         "I should take it with me."
     ],
-    
+
     # Plant seed
     "plant_the_seed": [
         "I placed the pot here and planted the seed.",
@@ -56,7 +57,7 @@ dialogues = {
         "But if I wait long enough... maybe decades...",
         "what will happen?"
     ],
-    
+
     # Tree is growing through 2nd floor
     "discover_giant_vine": [
         "Incredible! After 80 years, that small seed\ngrew into a huge glowing vine.",
@@ -71,7 +72,7 @@ dialogues = {
         "It's made of Trion Alloy.\nVery strong and impossible to break.",
         "I can't open it with normal tools."
     ],
-    
+
     # read
     "read_safe_document": [
         "A note on the desk...",
@@ -79,13 +80,13 @@ dialogues = {
         "'Only Liquid Entropy can break it\nby speeding up time around it.'",
         "Liquid Entropy... I need to find it."
     ],
-    
+
     # pickup tube
     "pickup_glass_tube": [
         "A thick glass tube.",
         "It can hold very dangerous substances."
     ],
-    
+
     # scoop liq entropy
     "scoop_liquid_entropy": [
         "The tanks broke many years ago.",
@@ -93,7 +94,7 @@ dialogues = {
         "Very dangerous.",
         "I carefully put some into the glass tube."
     ],
-    
+
     # Open safe
     "open_safe_success": [
         "I poured the Liquid Entropy on the safe...",
@@ -109,26 +110,26 @@ dialogues = {
         "The battery is inside.",
         "I can't reach it."
     ],
-    
+
     # not have broom to use yet
     "rubble_heavy": [
         "A pile of dangerous trash.",
         "I shouldn't touch it with my hands."
     ],
-    
+
     # sweep
     "sweep_rubble": [
         "I used the broom to clean the trash...",
         "Look! Something is glowing on the floor!"
     ],
-    
+
     # found key
     "pickup_key": [
         "It's a key!",
         "There is a tag on it.",
         "It looks like a Reactor Key."
     ],
-    
+
     # Use key
     "use_key": [
         "I put the key in.",

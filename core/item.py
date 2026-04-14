@@ -1,13 +1,21 @@
+"""
+Define and handle click on item/object logic and send them back to game class
+"""
 import pygame
 from core.images_path import item_images
 from data.dialogue_data import dialogues
 
+
 class Item:
-    def __init__(self, name, x, y, width, height, collectable, time_period, active = True):
+    """
+    Item attribute and click logic for specific item
+    """
+    def __init__(self, name, x, y, width, height, collectable, time_period, active=True):
         self.name = name
         self.time_period = time_period
 
-        self.image = self._load_image(item_images[f"{name}_{self.time_period}"])
+        self.image = self._load_image(
+            item_images[f"{name}_{self.time_period}"])
         self.image = pygame.transform.scale(self.image, (width, height))
 
         self.mask = pygame.mask.from_surface(self.image, threshold=0)
@@ -47,9 +55,11 @@ class Item:
                     if not game.flags["drive_inserted"]:
                         # Battery must be charged and collected first
                         if not game.flags["has_charged_battery"]:
-                            game.dialogue_ui.show(dialogues["drive_needs_battery"])
+                            game.dialogue_ui.show(
+                                dialogues["drive_needs_battery"])
                             return "inspected"
-                        game.dialogue_ui.show(dialogues["insert_drive_supercomputer"])
+                        game.dialogue_ui.show(
+                            dialogues["insert_drive_supercomputer"])
                         game.inventory.remove_selected_item()
                         game.flags["drive_inserted"] = True
                         return "inspected"
@@ -62,7 +72,8 @@ class Item:
                 # Past: connect fiber wire to back up before the explosion
                 if selected_item and selected_item.name == "fiber_wire_zone2" and game.current_time == "past":
                     if game.flags["drive_inserted"] and not game.flags["wire_connected"]:
-                        game.dialogue_ui.show(dialogues["connect_wire_supercomputer"])
+                        game.dialogue_ui.show(
+                            dialogues["connect_wire_supercomputer"])
                         game.inventory.remove_selected_item()
                         game.flags["wire_connected"] = True
                         return "inspected"
@@ -71,18 +82,21 @@ class Item:
                 if not game.flags["is_battery_charging"]:
                     if selected_item and selected_item.name == "battery_zone6" and game.current_time != "future":
                         if game.current_time == "past":
-                            game.dialogue_ui.show(dialogues["put_battery_charger"])
+                            game.dialogue_ui.show(
+                                dialogues["put_battery_charger"])
                             game.inventory.remove_selected_item()
                             game.flags["is_battery_charging"] = True
                             return "battery_inserted"
                         if game.current_time == "present":
-                            game.dialogue_ui.show(dialogues["charger_port_broken"])
+                            game.dialogue_ui.show(
+                                dialogues["charger_port_broken"])
                             return "inspected"
                 # full in future time
                 else:
                     if game.current_time == "future":
                         game.dialogue_ui.show(dialogues["get_full_battery"])
-                        game.inventory.add_item(Item("charged_battery_zone1", 0, 0, 50, 50, True, "future"))
+                        game.inventory.add_item(
+                            Item("charged_battery_zone1", 0, 0, 50, 50, True, "future"))
                         game.flags["is_battery_charging"] = False
                         game.flags["has_charged_battery"] = True
                         return "got_charged_battery"
@@ -115,9 +129,12 @@ class Item:
                         game.flags["is_pot_placed"] = True
                     game.inventory.remove_selected_item()
                     self.name = "placed_pot_zone1"
-                    self.image = self._load_image(item_images["pot_zone3_past"])
-                    self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
-                    self.mask = pygame.mask.from_surface(self.image, threshold=0)
+                    self.image = self._load_image(
+                        item_images["pot_zone3_past"])
+                    self.image = pygame.transform.scale(
+                        self.image, (self.rect.width, self.rect.height))
+                    self.mask = pygame.mask.from_surface(
+                        self.image, threshold=0)
                     return "pot_placed"
 
             # Plant Seed or get pot back
@@ -149,16 +166,21 @@ class Item:
                 # get pot back
                 if selected_item is None or selected_item.name != "seed_zone3":
                     self.name = "pot_spot_zone1"
-                    game.inventory.add_item(Item("pot_zone3", 700, 300, 50, 50, True, "past"))
-                    self.image = self._load_image(item_images["pot_spot_zone1_past"])
-                    self.image = pygame.transform.scale(self.image, (self.rect.width, self.rect.height))
-                    self.mask = pygame.mask.from_surface(self.image, threshold=0)
+                    game.inventory.add_item(
+                        Item("pot_zone3", 700, 300, 50, 50, True, "past"))
+                    self.image = self._load_image(
+                        item_images["pot_spot_zone1_past"])
+                    self.image = pygame.transform.scale(
+                        self.image, (self.rect.width, self.rect.height))
+                    self.mask = pygame.mask.from_surface(
+                        self.image, threshold=0)
                     return "pot_removed"
 
             # get seed back
             elif self.name == "placed_pot_zone1_with_seed":
                 self.name = "placed_pot_zone1"
-                game.inventory.add_item(Item("seed_zone3", 100, 100, 50, 50, True, "future"))
+                game.inventory.add_item(
+                    Item("seed_zone3", 100, 100, 50, 50, True, "future"))
                 for item in game.scenes[1].items:
                     if item.name in ["tree1_present", "tree1_future", "tree2_future"]:
                         item.is_active = False
@@ -170,7 +192,8 @@ class Item:
             # Climb to zone 4 — medicine check
             elif self.name == "tree2_future":
                 if selected_item and selected_item.name == "medicine_zone1":
-                    game.dialogue_ui.show(dialogues["use_medicine_before_climb"])
+                    game.dialogue_ui.show(
+                        dialogues["use_medicine_before_climb"])
                     game.inventory.remove_selected_item()
                     game.flags["has_taken_medicine"] = True
                     game.flags["is_injured"] = False
@@ -179,9 +202,11 @@ class Item:
                     # Climb without medicine — apply injury penalty
                     if not game.flags["is_injured"]:
                         game.flags["is_injured"] = True
-                        game.dialogue_ui.show(dialogues["vine_climb_no_medicine"])
+                        game.dialogue_ui.show(
+                            dialogues["vine_climb_no_medicine"])
                     else:
-                        game.dialogue_ui.show(dialogues["hand_injured_reminder"])
+                        game.dialogue_ui.show(
+                            dialogues["hand_injured_reminder"])
                     return "Not go"
                 return "go_zone4"
 
@@ -236,8 +261,10 @@ class Item:
                         if obj.name[:4] == "safe":
                             game.scenes[4].items.remove(obj)
                     # get drive and key card
-                    game.inventory.add_item(Item("drive_zone4", 0, 0, 100, 100, False, "past"))
-                    game.inventory.add_item(Item("card_zone4", 0, 0, 100, 100, False, "past"))
+                    game.inventory.add_item(
+                        Item("drive_zone4", 0, 0, 100, 100, False, "past"))
+                    game.inventory.add_item(
+                        Item("card_zone4", 0, 0, 100, 100, False, "past"))
                 else:
                     game.flags["found_safe"] = True
                     # Can click more than 1 time
@@ -248,7 +275,8 @@ class Item:
                 if selected_item and selected_item.name == "test_tube_zone3":
                     game.dialogue_ui.show(dialogues["scoop_liquid_entropy"])
                     game.inventory.remove_selected_item()
-                    game.inventory.add_item(Item("liquid_entropy_zone3", 0, 0, 100, 100, False, "present"))
+                    game.inventory.add_item(
+                        Item("liquid_entropy_zone3", 0, 0, 100, 100, False, "present"))
                     game.flags["liquid_entropy_collected"] = True
 
             # Reactor Part
@@ -289,7 +317,8 @@ class Item:
                     game.inventory.remove_selected_item()
                     game.scenes[1].items.remove(self)
                     # Spawn the real key
-                    game.scenes[1].items.append(Item("key_zone1", 443, 262, 50, 50, True, "future"))
+                    game.scenes[1].items.append(
+                        Item("key_zone1", 443, 262, 50, 50, True, "future"))
                     return "key_retrieved"
                 game.dialogue_ui.show(dialogues["key_on_ground_no_magnet"])
                 return "inspected"
@@ -304,12 +333,14 @@ class Item:
                 if game.current_time == "future":
                     # Wire connected: first time — finger scan identity reveal
                     if not game.flags["has_seen_identity"]:
-                        game.dialogue_ui.show(dialogues["finger_scan_identity"])
+                        game.dialogue_ui.show(
+                            dialogues["finger_scan_identity"])
                         game.flags["has_seen_identity"] = True
                         return "inspected"
                     # Second click: watch video diary
                     if not game.flags["blackbox_unlocked"]:
-                        game.dialogue_ui.show(dialogues["blackbox_video_diary"])
+                        game.dialogue_ui.show(
+                            dialogues["blackbox_video_diary"])
                         game.flags["blackbox_unlocked"] = True
                         return "inspected"
                     # Third click: full confession + get password

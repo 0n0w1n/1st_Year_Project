@@ -1,5 +1,8 @@
-import pygame
+"""
+Main file to run the whole game
+"""
 import sys
+import pygame
 from settings import WIDTH, HEIGHT
 from core.menu import MenuScene
 from core.game_loop import Game
@@ -7,6 +10,7 @@ from core.stats_window import show_stats
 
 
 def main():
+    """starting the game"""
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("The TRION")

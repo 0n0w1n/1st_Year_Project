@@ -1,3 +1,6 @@
+"""
+Module for tracking and logging game statistics to CSV files.
+"""
 import csv
 import os
 import time
@@ -29,6 +32,9 @@ HEADERS = {
 
 
 class StatsTracker:
+    """
+    Tracks player behavior including clicks, dimension changes, idle time, and zone entries.
+    """
     def __init__(self):
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + uuid.uuid4().hex[:4]
         self._rows = {key: [] for key in CSV_FILES}
@@ -49,9 +55,15 @@ class StatsTracker:
         self._current_puzzle_label = None
 
     def _ts(self):
+        """Generates a formatted string of the current timestamp."""
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def _row(self, feature, **fields):
+        """
+        Internal helper to append a data row to the in-memory storage.
+        feature (str): The key corresponding to the CSV_FILES category.
+        **fields: Arbitrary keyword arguments representing CSV columns.
+        """
         row = {"session_id": self.session_id, "timestamp": self._ts()}
         row.update(fields)
         self._rows[feature].append(row)
@@ -89,6 +101,9 @@ class StatsTracker:
                   zone=f"Zone {zone}", dimension=dimension)
 
     def record_zone_entry(self, zone_number, dimension):
+        """
+        Logs when a player enters a new zone
+        """
         self._zone_totals[zone_number] = self._zone_totals.get(zone_number, 0) + 1
         self._row("zone_entries",
                   zone=f"Zone {zone_number}",
@@ -96,15 +111,18 @@ class StatsTracker:
                   total_entries_so_far=self._zone_totals[zone_number])
 
     def set_active_puzzle(self, puzzle_id, puzzle_label):
+        """Sets the current puzzle context for tracking."""
         self._current_puzzle_id    = puzzle_id
         self._current_puzzle_label = puzzle_label
 
     def record_puzzle_solved(self, puzzle_id, _puzzle_label):
+        """Adds a puzzle ID to the solved set to prevent duplicate logging."""
         if puzzle_id in self._solved_puzzles:
             return
         self._solved_puzzles.add(puzzle_id)
 
     def finalise(self):
+        """Writes all recorded session data from memory to physical CSV files."""
         os.makedirs(CSV_DIR, exist_ok=True)
         for feature, filepath in CSV_FILES.items():
             rows = self._rows[feature]
@@ -121,6 +139,7 @@ class StatsTracker:
 
     # Read-back helpers for stats_window
     def get_click_coords(self):
+        """Returns a list of x, y coordinate tuples for the current session."""
         return [(int(r["click_x"]), int(r["click_y"])) for r in self._rows["click_coords"]]
 
     def get_dim_rows(self):
@@ -128,6 +147,7 @@ class StatsTracker:
         return [(r["dimension"], r["stint_id"]) for r in self._rows["clicks_per_dim"]]
 
     def get_thinking_times(self):
+        """Returns a list of (duration, index) for each idle event."""
         return [(float(r["idle_duration_sec"]), i)
                 for i, r in enumerate(self._rows["thinking_time"])]
 
@@ -138,6 +158,7 @@ class StatsTracker:
                 for r in self._rows["clicks_btw_puzzles"]]
 
     def get_zone_entries(self):
+        """Returns a dictionary summarizing total entries per zone."""
         result = {f"Zone {i}": 0 for i in range(1, 7)}
         for r in self._rows["zone_entries"]:
             z = r["zone"]

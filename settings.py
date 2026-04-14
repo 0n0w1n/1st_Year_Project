@@ -1,4 +1,4 @@
-# Main settings
+"""Main settings for using in other file"""
 WIDTH = 800
 HEIGHT = 600
 FPS = 60
