@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime
 
 CSV_DIR = "data/stats"
+IDLE_THRESHOLD = 3.0  # seconds of inactivity before counting as "thinking time"
 CSV_FILES = {
     "click_coords":       os.path.join(CSV_DIR, "click_coords.csv"),
     "clicks_per_dim":     os.path.join(CSV_DIR, "clicks_per_dim.csv"),
@@ -75,7 +76,7 @@ class StatsTracker:
 
         # Feature 3: thinking time only when idle > 3 s
         idle = now - self._last_click_time
-        if idle > 3.0:
+        if idle > IDLE_THRESHOLD:
             self._row("thinking_time",
                       idle_duration_sec=round(idle, 2),
                       zone=f"Zone {zone}", dimension=dimension)
@@ -98,7 +99,7 @@ class StatsTracker:
         self._current_puzzle_id    = puzzle_id
         self._current_puzzle_label = puzzle_label
 
-    def record_puzzle_solved(self, puzzle_id, puzzle_label):
+    def record_puzzle_solved(self, puzzle_id, _puzzle_label):
         if puzzle_id in self._solved_puzzles:
             return
         self._solved_puzzles.add(puzzle_id)

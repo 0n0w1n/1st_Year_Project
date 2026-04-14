@@ -2,11 +2,14 @@ import pygame
 from settings import HEIGHT, WIDTH
 from data.dialogue_data import dialogues
 
+INTRO_FADE_SPEED = 3
+
 class Scene:
     def __init__(self, zone_id, items):
         self.fading = False
         self.zone_id = zone_id
         self.items = items
+        self.intro_alpha = 255
 
         # load scene
         if self.zone_id != 7:
@@ -14,9 +17,9 @@ class Scene:
             self.bg_present = self.load_image(f"assets/image/background/zone{zone_id}_present.png")
             self.bg_future = self.load_image(f"assets/image/background/zone{zone_id}_future.png")
         else:
-            self.bg_past = self.load_image(f"assets/image/background/zone7.png")
-            self.bg_present = self.load_image(f"assets/image/background/zone7.png")
-            self.bg_future = self.load_image(f"assets/image/background/zone7.png")
+            self.bg_past = self.load_image("assets/image/background/zone7.png")
+            self.bg_present = self.load_image("assets/image/background/zone7.png")
+            self.bg_future = self.load_image("assets/image/background/zone7.png")
         
 
     def load_image(self, path):
@@ -42,12 +45,8 @@ class Scene:
             if not game.flags["has_seen_intro"]:
                 self.fading = True
                 
-                # if theres no intro_alpha var
-                if not hasattr(self, 'intro_alpha'):
-                    self.intro_alpha = 255 
-                
                 # Fade down
-                self.intro_alpha -= 3 
+                self.intro_alpha -= INTRO_FADE_SPEED
                 
                 if self.intro_alpha <= 0:
                     self.intro_alpha = 0
@@ -83,7 +82,7 @@ class Scene:
 
                 # first time enter reactor room in past
                 elif item.name == "battery_zone6" and not game.flags["first_time_found_battery"]:
-                    game.dialogue_ui.show(["Look like there's only battery in past."])
+                    game.dialogue_ui.show(dialogues["first_time_battery_past"])
                     game.flags["first_time_found_battery"] = True
                     item.draw(screen)
 

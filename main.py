@@ -1,8 +1,9 @@
 import pygame
 import sys
-from settings import WIDTH, HEIGHT, FPS
+from settings import WIDTH, HEIGHT
 from core.menu import MenuScene
 from core.game_loop import Game
+from core.stats_window import show_stats
 
 
 def main():
@@ -25,7 +26,6 @@ def main():
     # Freeze pygame while stats window is open
     pygame.display.iconify()
 
-    from core.stats_window import show_stats
     game.tracker.finalise()
     show_stats(game.tracker)
 

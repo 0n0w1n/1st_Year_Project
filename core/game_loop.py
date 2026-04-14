@@ -156,7 +156,7 @@ class Game:
 
                     if click_event_code is not None:
                         if click_event_code == "open_main_com":
-                                self.active_ui = self.main_com_ui
+                            self.active_ui = self.main_com_ui
 
                         elif click_event_code[:7] == "go_zone":
                             self.current_zone = int(click_event_code[-1])
@@ -283,8 +283,7 @@ class Game:
             self.screen.blit(self.flash_surface, (0, 0))
             self.flash_alpha -= 15 
             
-            if self.flash_alpha < 0:
-                self.flash_alpha = 0
+            self.flash_alpha = max(self.flash_alpha, 0)
 
         pygame.display.flip()
 

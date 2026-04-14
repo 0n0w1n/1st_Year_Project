@@ -43,10 +43,9 @@ class TimeSlider:
         if self.rect.collidepoint(mouse_pos) and selected_item and selected_item.name == "Time_Tuner":
             if mouse_pos[0] < self.rect.x + self.segment_width:
                 return "past"
-            elif mouse_pos[0] < self.rect.x + (self.segment_width * 2):
+            if mouse_pos[0] < self.rect.x + (self.segment_width * 2):
                 return "present"
-            else:
-                return "future"
+            return "future"
         return None
     
 
@@ -136,7 +135,7 @@ class Inventory:
 class MainComUI:
     def __init__(self):
         # UI image path
-        self.image = pygame.image.load("assets/image/ui/main_com_ui.PNG").convert_alpha()
+        self.image = pygame.image.load("assets/image/ui/main_com_ui.png").convert_alpha()
         
         # adjust size
         self.ui_width = WIDTH
@@ -158,6 +157,13 @@ class MainComUI:
         # Debug
         self.show_debug_hitbox = False
 
+    def _all_ready(self, game):
+        return (
+            game.flags["has_charged_battery"] and
+            game.flags["is_safe_opened"] and
+            game.flags["has_password"]
+        )
+
     def handle_click(self, mouse_pos, state, game):
         # Check wheter mouse hit hitbox or not
         if self.btn_close.collidepoint(mouse_pos):
@@ -165,16 +171,11 @@ class MainComUI:
             return "close_ui"
 
         # Exit button — only active when all 3 requirements met
-        all_ready = (
-            game.flags["has_charged_battery"] and
-            game.flags["is_safe_opened"] and
-            game.flags["has_password"]
-        )
-        if all_ready and self.btn_exit.collidepoint(mouse_pos):
+        if self._all_ready(game) and self.btn_exit.collidepoint(mouse_pos):
             self.alert_message = ""
             return "game_exit"
 
-        elif self.btn_floor2.collidepoint(mouse_pos):
+        if self.btn_floor2.collidepoint(mouse_pos):
             if state == "present":
                 self.alert_message = "Elevator not found/Broken"
             else:
@@ -183,19 +184,18 @@ class MainComUI:
                     game.current_zone = 4
                     game.fade("Director's Office")
                     return "close_ui"
-                else:
-                    self.alert_message = "Access Denied"
+                self.alert_message = "Access Denied"
             return "ui_clicked"
             
-        elif self.btn_zone5.collidepoint(mouse_pos):
+        if self.btn_zone5.collidepoint(mouse_pos):
             if state == "present":
                 self.alert_message = "Elevator not found/Broken"
                 return "ui_clicked"
             self.alert_message = ""
             return "go_zone5"
             
-        elif self.rect.collidepoint(mouse_pos):
-            return "ui_clicked" 
+        if self.rect.collidepoint(mouse_pos):
+            return "ui_clicked"
             
         return None
 
@@ -203,13 +203,7 @@ class MainComUI:
         # Main UI
         screen.blit(self.image, self.rect)
 
-        # all requirement
-        all_ready = (
-            game.flags["has_charged_battery"] and
-            game.flags["is_safe_opened"] and
-            game.flags["has_password"]
-        )
-
+        all_ready = self._all_ready(game)
 
 
         # Text in MainCom
@@ -339,7 +333,7 @@ class DialogueUI:
         self.current_index = 0
         self.is_active = True
 
-    def handle_click(self, mouse_pos):
+    def handle_click(self, _mouse_pos):
         # Click for next sentence
         if self.is_active:
             self.current_index += 1
@@ -362,9 +356,7 @@ class DialogueUI:
         current_text = self.messages[self.current_index]
         lines = current_text.split('\n')
 
-        line_height = self.font.get_linesize() + 5 # Text Height
-        total_text_height = len(lines) * line_height # Total text height
-
+        line_height = self.font.get_linesize() + 5
         box_center_y = 410
         
         for i, line in enumerate(lines):

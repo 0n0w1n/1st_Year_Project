@@ -5,9 +5,10 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import numpy as np
-import csv, os
+import csv
+import os
 from collections import defaultdict, Counter
-from core.stats_tracker import CSV_FILES, CSV_DIR
+from core.stats_tracker import CSV_FILES, CSV_DIR, IDLE_THRESHOLD
 
 BG      = "#0a0a1a"
 PANEL   = "#12122a"
@@ -143,7 +144,7 @@ def build_click_coords(parent, tracker):
 
     # All sessions
     csv_rows  = _read_csv("click_coords")
-    all_coords = [(int(r["click_x"]), int(r["click_y"])) for r in csv_rows] \
+    all_coords = [(int(row["click_x"]), int(row["click_y"])) for row in csv_rows] \
                  if csv_rows else this_coords
     _click_coords_graph(f_all, all_coords,
                         f"All Sessions  ({len(all_coords)} clicks)")
@@ -158,8 +159,8 @@ def _dim_boxplot(parent, stint_data, title):
     bp = ax.boxplot(data, patch_artist=True, medianprops={"color": BG, "linewidth": 2})
     for patch, color in zip(bp["boxes"], colors):
         patch.set_facecolor(color); patch.set_alpha(0.8)
-    for el in ["whiskers", "caps", "fliers"]:
-        for item in bp[el]: item.set_color(TEXT)
+    for element in ["whiskers", "caps", "fliers"]:
+        for artist in bp[element]: artist.set_color(TEXT)
 
     ylim = ax.get_ylim()
     for i, d in enumerate(dims):
@@ -191,8 +192,8 @@ def _thinking_graph(parent, durations, indices, title):
         ax.plot(indices, durations, color=ACCENT, linewidth=1.5,
                 marker="o", markersize=4, markerfacecolor=ACCENT2)
         ax.fill_between(indices, durations, alpha=0.15, color=ACCENT)
-        ax.axhline(3, color=TEXT, linewidth=0.8, linestyle="--", alpha=0.5,
-                   label="3-sec threshold")
+        ax.axhline(IDLE_THRESHOLD, color=TEXT, linewidth=0.8, linestyle="--", alpha=0.5,
+                   label=f"{IDLE_THRESHOLD}-sec threshold")
         ax.set_xlabel("Thinking Event #"); ax.set_ylabel("Idle Duration (s)")
         ax.legend(facecolor=PANEL, labelcolor=TEXT, fontsize=8)
     else:
@@ -264,7 +265,7 @@ def _puzzle_table(parent, counts_this, counts_all, current_last):
     for i, (pid, label) in enumerate(PUZZLE_ORDER):
         this_val = counts_this.get(pid, 0)
         all_vals = counts_all.get(pid, [])
-        is_last  = (pid == current_last)
+        is_last  = pid == current_last
 
         row_bg = "#1e0a2e" if is_last else (PANEL if i % 2 == 0 else "#16163a")
         row    = tk.Frame(outer, bg=row_bg)

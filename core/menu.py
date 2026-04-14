@@ -25,6 +25,9 @@ class MenuScene:
         # Triangle indicator
         self.tri_size = 12
 
+        # Keyboard shortcut hint font
+        self.hint_font = pygame.font.Font("assets/fonts/JetBrainsMono-Medium.ttf", 12)
+
         # White overlay surface for fade transition
         self.white = pygame.Surface((WIDTH, HEIGHT))
         self.white.fill((255, 255, 255))
@@ -65,7 +68,7 @@ class MenuScene:
             elif event.type == pygame.KEYDOWN:
                 if self.fading_out or self.fading_in:
                     continue
-                if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
+                if event.key in (pygame.K_RETURN, pygame.K_SPACE):
                     self.fading_out = True
                 elif event.key == pygame.K_ESCAPE:
                     self.result = "quit"
@@ -93,6 +96,12 @@ class MenuScene:
             p2 = (cx,         cy + s)
             p3 = (cx + s * 2, cy)
             pygame.draw.polygon(self.screen, COLORS["WHITE"], [p1, p2, p3])
+
+        # Keyboard shortcuts hint
+        if not self.fading_out:
+            hint = self.hint_font.render("ENTER / SPACE: Start    ESC: Quit", True, (200, 200, 200))
+            hint_rect = hint.get_rect(center=(WIDTH // 2, HEIGHT - 30))
+            self.screen.blit(hint, hint_rect)
 
         # White fade overlay
         if self.fade_alpha > 0:

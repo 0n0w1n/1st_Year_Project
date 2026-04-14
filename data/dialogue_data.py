@@ -303,5 +303,42 @@ dialogues = {
         "Dr. XXXXX walks out.",
         "Into a changed world.",
         "[ END ]"
-    ]
+    ],
+
+    # charger port broken in present
+    "charger_port_broken": [
+        "Charge function is working.",
+        "But the port is broken."
+    ],
+
+    # injured hand reminder
+    "hand_injured_reminder": [
+        "My hand is injured.",
+        "I have to treat this wound first."
+    ],
+
+    # elevator not working in future
+    "elevator_not_working": [
+        "Elevator is not working."
+    ],
+
+    # need keycard for elevator
+    "need_keycard_elevator": [
+        "Need Key Card level-5 to use Elevator"
+    ],
+
+    # need keycard for gate
+    "need_keycard_gate": [
+        "Need Key Card level-5 to use gate"
+    ],
+
+    # blackbox encrypting in past/present
+    "blackbox_encrypting": [
+        "Encrypting..."
+    ],
+
+    # first time seeing battery in past reactor room
+    "first_time_battery_past": [
+        "Look like there's only battery in past."
+    ],
 }
