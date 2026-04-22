@@ -42,7 +42,6 @@ class Scene:
             img = pygame.transform.scale(img, (WIDTH, HEIGHT))
             return img
         except FileNotFoundError:
-            print(f"Cannot find image {path}")
             surf = pygame.Surface((WIDTH, HEIGHT))
             surf.fill((50, 50, 50))
             return surf
@@ -144,7 +143,6 @@ class Scene:
                                     dialogues["pickup_fiber_wire"])
 
                             item.is_active = False
-                            print(f"Collected: {item.name}")
 
                             # for first time pick up time tuner
                             if not game.flags["has_tuner"] and item.name == "Time_Tuner":

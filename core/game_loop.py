@@ -101,11 +101,6 @@ class Game:
             if event.type == pygame.QUIT:
                 self.is_running = False
 
-            # for debug
-            # elif event.type == pygame.KEYDOWN:
-            #     if 49 <= event.key <= 54:
-            #         self.current_zone = event.key-48
-
             # Click checker
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Click check
@@ -217,6 +212,8 @@ class Game:
         for flag, puzzle_id, label in checks:
             if self.flags.get(flag):
                 self.tracker.record_puzzle_solved(puzzle_id, label)
+        if all(self.flags.get(flag) for flag, _, _ in checks):
+            self.tracker.record_puzzle_solved("puzzle_done", "Game Complete")
 
     def fade(self, text):
         self.fade_text = text

@@ -29,7 +29,6 @@ class Item:
         try:
             return pygame.image.load(path).convert_alpha()
         except FileNotFoundError:
-            print(f"[Item] Image not found: {path}")
             surf = pygame.Surface((50, 50), pygame.SRCALPHA)
             return surf
 
@@ -39,8 +38,6 @@ class Item:
 
     def on_click(self, game):
         if self.is_active:
-            print(f"clicked on {self.name}")
-
             selected_item = game.inventory.get_selected_item()
 
             # Click on main computer in zone1
@@ -241,7 +238,7 @@ class Item:
                 if not game.flags["knows_about_entropy"]:
                     game.flags["knows_about_entropy"] = True
                     game.dialogue_ui.show(dialogues["read_safe_document"])
-                    game.scenes[4].items.remove(self)
+                    self.is_active = False
 
             # click safe
             elif self.name == "safe_zone4":
@@ -256,10 +253,10 @@ class Item:
                     game.inventory.remove_selected_item()
                     game.flags["is_safe_opened"] = True
                     game.dialogue_ui.show(dialogues["open_safe_success"])
-                    # Remove normal Safe
-                    for obj in game.scenes[4].items[::-1]:
+                    # Deactivate safe items instead of removing mid-iteration
+                    for obj in game.scenes[4].items:
                         if obj.name[:4] == "safe":
-                            game.scenes[4].items.remove(obj)
+                            obj.is_active = False
                     # get drive and key card
                     game.inventory.add_item(
                         Item("drive_zone4", 0, 0, 100, 100, False, "past"))
@@ -299,7 +296,7 @@ class Item:
                     if selected_item and selected_item.name == "broom_zone2":
                         game.dialogue_ui.show(dialogues["key_in_hole"])
                         game.flags["is_rubble_swept"] = True
-                        game.scenes[1].items.remove(self)
+                        self.is_active = False
                         # Key falls into hole — activate the hole item
                         game.flags["is_key_on_ground"] = True
                         for item in game.scenes[1].items:
@@ -315,7 +312,7 @@ class Item:
                 if selected_item and selected_item.name == "magnet_zone1":
                     game.dialogue_ui.show(dialogues["magnet_get_key"])
                     game.inventory.remove_selected_item()
-                    game.scenes[1].items.remove(self)
+                    self.is_active = False
                     # Spawn the real key
                     game.scenes[1].items.append(
                         Item("key_zone1", 443, 262, 50, 50, True, "future"))

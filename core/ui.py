@@ -409,6 +409,11 @@ class DialogueUI:
         # Draw text box
         screen.blit(self.image, self.rect)
 
+        # Guard against out-of-bounds (e.g. if is_active and index are out of sync)
+        if self.current_index >= len(self.messages):
+            self.is_active = False
+            return
+
         # Current text
         current_text = self.messages[self.current_index]
         lines = current_text.split('\n')

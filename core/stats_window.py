@@ -298,7 +298,7 @@ def _puzzle_table(parent, counts_this, counts_all, current_last):
                  bg=row_bg,
                  fg=ACCENT2 if this_val else GRID,
                  font=("Courier", 9, "bold" if this_val else "normal"),
-                 width=col_session, anchor="center", pady=5).pack(side=tk.LEFT)
+                 width=col_session, anchor="e", padx=4, pady=5).pack(side=tk.LEFT)
 
         tk.Label(row, text="|", bg=row_bg, fg=GRID,
                  font=("Courier", 9), width=col_div,
@@ -306,7 +306,7 @@ def _puzzle_table(parent, counts_this, counts_all, current_last):
 
         if all_vals:
             arr = np.array(all_vals, dtype=float)
-            cells = [int(arr.min()), int(arr.max()),
+            cells = [f"{arr.min():.1f}", f"{arr.max():.1f}",
                      f"{arr.mean():.1f}", f"{np.median(arr):.1f}", f"{arr.std():.1f}"]
             sfg = TEXT
         else:
@@ -316,7 +316,7 @@ def _puzzle_table(parent, counts_this, counts_all, current_last):
         for val, w in zip(cells, col_stats):
             tk.Label(row, text=str(val), bg=row_bg, fg=sfg,
                      font=("Courier", 9), width=w,
-                     anchor="center", pady=5).pack(side=tk.LEFT)
+                     anchor="e", padx=4, pady=5).pack(side=tk.LEFT)
 
     tk.Label(outer,
              text="◄ = stopped here  |  n/a = not reached  |  Higher mean → harder",

@@ -135,7 +135,6 @@ class StatsTracker:
                 if new_file:
                     writer.writeheader()
                 writer.writerows(rows)
-        print(f"[StatsTracker] Session '{self.session_id}' saved to {CSV_DIR}/")
 
     # Read-back helpers for stats_window
     def get_click_coords(self):
