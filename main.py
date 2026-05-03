@@ -2,11 +2,17 @@
 Main file to run the whole game
 """
 import sys
+import os
+import multiprocessing as mp
 import pygame
 from settings import WIDTH, HEIGHT
 from core.menu import MenuScene
 from core.game_loop import Game
 from core.stats_window import show_stats
+
+
+def _stats_process(tracker):
+    show_stats(tracker)
 
 
 def main():
@@ -27,14 +33,15 @@ def main():
     game = Game(screen)
     game.run()
 
-    # Freeze pygame while stats window is open
-    pygame.display.iconify()
-
     game.tracker.finalise()
-    show_stats(game.tracker)
-
+    pygame.display.quit()
     pygame.quit()
-    sys.exit()
+
+    # Spawn stats in a fresh process (no SDL) so Tkinter can init cleanly
+    ctx = mp.get_context("spawn")
+    p = ctx.Process(target=_stats_process, args=(game.tracker,))
+    p.start()
+    p.join()
 
 
 if __name__ == "__main__":
