@@ -37,7 +37,7 @@ def main():
     pygame.display.quit()
     pygame.quit()
 
-    # Spawn stats in a fresh process (no SDL) so Tkinter can init cleanly
+    # Spawn stats
     ctx = mp.get_context("spawn")
     p = ctx.Process(target=_stats_process, args=(game.tracker,))
     p.start()
