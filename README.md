@@ -9,6 +9,10 @@ The TRION is a 2D point-and-click adventure puzzle game. Players wake up inside 
 
 ---
 
+## Requirements
+
+- **Python 3.14.4 or higher** (Python 3.14.0 – 3.14.3 may not work with pygame 2.6.1)
+
 ## Installation
 
 To Clone this project:
